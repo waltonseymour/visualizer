@@ -6,7 +6,6 @@ import { incrementCounter } from "./actions/CounterActions";
 import reducer from "./reducers/CounterReducer";
 import Counter from "./components/Counter";
 
-
 let store = createStore(reducer);
 let { dispatch } = store;
 
@@ -17,7 +16,6 @@ setInterval(() => {
 ReactDOM.render(
     <Provider store={store}>
       <Counter/>
-    </Provider>
-    ,
+    </Provider>,
     document.getElementById("app")
 );

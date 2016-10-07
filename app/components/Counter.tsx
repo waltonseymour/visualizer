@@ -3,7 +3,6 @@ import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { decrementCounter } from "../actions/CounterActions";
 
-
 interface CounterDispatch {
   onClick();
 }
