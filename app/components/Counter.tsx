@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
-import { decrementCounter } from "../actions/CounterActions";
+import { incrementCounter } from "../actions/CounterActions";
 
 interface CounterDispatch {
   onClick();
@@ -20,7 +20,7 @@ const mapStateToProps = (state, ownProps): CounterProps => {
 const mapDispatchToProps = (dispatch): CounterDispatch => {
   return {
     onClick: () => {
-      dispatch(decrementCounter());
+      dispatch(incrementCounter());
     }
   }
 }
