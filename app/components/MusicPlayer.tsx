@@ -47,9 +47,12 @@ class MusicPlayer extends React.Component<MusicPlayerProps, MusicPlayerState> {
     };
   }
 
-  updateUri = (e) => {
+  newSong = () => {
+    let filePath = dialog.showOpenDialog({
+      filters: [{name: 'Music', extensions: ['mp3']}]
+    });
     this.setState({
-      selectedUri: e.target.value
+      selectedUri: "file://" + filePath[0]
     });
   };
 
@@ -59,10 +62,17 @@ class MusicPlayer extends React.Component<MusicPlayerProps, MusicPlayerState> {
       fontSize: '20px'
     };
 
+    let player;
+    if (this.state.selectedUri) {
+      player = <audio controls autoPlay src={this.state.selectedUri}/>
+    } else {
+      player = "";
+    }
+
     return (
       <div style={divStyle} onClick={this.props.addSong}>
-          <button onClick={() => dialog.showOpenDialog({}) }> YAY </button>
-          {this.state.selectedUri}
+          <button onClick={this.newSong}> YAY </button>
+          {player}
       </div>
     );
   }
