@@ -1,8 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as electron from "electron";
 import { connect } from "react-redux";
 import { addSong } from "../actions/MusicPlayerActions";
 import { Song } from "../models/Song";
+
+const { dialog } = electron.remote;
 
 interface MusicPlayerDispatch {
   addSong();
@@ -58,7 +61,7 @@ class MusicPlayer extends React.Component<MusicPlayerProps, MusicPlayerState> {
 
     return (
       <div style={divStyle} onClick={this.props.addSong}>
-          <input type="file" onChange={this.updateUri}  value={this.state.selectedUri} />
+          <button onClick={() => dialog.showOpenDialog({}) }> YAY </button>
           {this.state.selectedUri}
       </div>
     );

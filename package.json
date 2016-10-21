@@ -17,6 +17,8 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@types/electron": "^1.4.24",
+    "@types/node": "^6.0.45",
     "electron": "^1.4.1",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",

@@ -4,6 +4,8 @@ module.exports = {
         filename: "./build/bundle.js",
     },
 
+    target: "electron",
+
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
 
