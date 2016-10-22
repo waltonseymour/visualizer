@@ -3,6 +3,7 @@ import * as electron from "electron";
 import { connect } from "react-redux";
 import { addSong } from "../actions/MusicPlayerActions";
 import { Song } from "../models/Song";
+import visualizer from "./Visualizer";
 
 const { dialog } = electron.remote;
 
@@ -42,12 +43,11 @@ class MusicPlayer extends React.Component<MusicPlayerProps, {}> {
 
   render() {
     let divStyle = {
-      color: 'black',
-      fontSize: '20px'
+      display: "none"
     };
 
     return (
-      <div style={divStyle}>
+      <div style={divStyle} onKeyPress={this.newSong}>
           <button onClick={this.newSong}> YAY </button>
           {this.props.player}
       </div>
