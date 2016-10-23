@@ -36,7 +36,7 @@ class MusicPlayer extends React.Component<MusicPlayerProps, {}> {
 
   newSong = () => {
     dialog.showOpenDialog({
-      filters: [{name: 'Music', extensions: ['mp3']}]
+      filters: [{name: 'Music', extensions: ['mp3', 'm4a', 'wav', 'ogg']}]
     },
       (files) => this.props.addSong("file://" + files[0])
     );
