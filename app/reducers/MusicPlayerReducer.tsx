@@ -10,7 +10,7 @@ let initalSong = {uri: "file:///home/walton/Downloads/Vivian%20Girls%20-%20Where
 
 const initialState: MusicState = {
   currentSong: initalSong,
-  player: <audio id="music" controls autoPlay src={initalSong.uri}/>
+  player: <audio id="music" style={{display: 'none'}} controls autoPlay src={initalSong.uri}/>
 };
 
 let musicPlayer = (state = initialState, action): MusicState => {
@@ -18,7 +18,7 @@ let musicPlayer = (state = initialState, action): MusicState => {
     case "ADD_SONG":
       return Object.assign({}, state, {
         currentSong: action.payload,
-        player: <audio id="music" controls autoPlay src={action.payload.uri}/>
+        player: <audio id="music" style={{display: 'none'}} controls autoPlay src={action.payload.uri}/>
       });
     default:
       return state

@@ -35,21 +35,29 @@ class MusicPlayer extends React.Component<MusicPlayerProps, {}> {
   }
 
   newSong = () => {
-    let filePath = dialog.showOpenDialog({
+    dialog.showOpenDialog({
       filters: [{name: 'Music', extensions: ['mp3']}]
-    });
-    this.props.addSong("file://" + filePath[0]);
+    },
+      (files) => this.props.addSong("file://" + files[0])
+    );
   };
 
-  render() {
-    let divStyle = {
-      display: "none"
-    };
+  componentDidMount(){
+    let v = new visualizer({
+      canvasElement: document.getElementById('canvas'),
+      musicElement: document.getElementById('music'),
+      height: 1200,
+      width: 1600
+    });
 
+    v.draw();
+  }
+
+  render() {
     return (
-      <div style={divStyle} onKeyPress={this.newSong}>
-          <button onClick={this.newSong}> YAY </button>
+      <div onClick={this.newSong}>
           {this.props.player}
+          <canvas height={1200} width={1600} id="canvas"></canvas>
       </div>
     );
   }

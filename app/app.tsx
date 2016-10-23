@@ -14,10 +14,3 @@ ReactDOM.render(
     </Provider>,
     document.getElementById("app")
 );
-
-let v = new visualizer({
-  canvasElement: document.getElementById('canvas'),
-  musicElement: document.getElementById('music')
-});
-
-v.draw();
