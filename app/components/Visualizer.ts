@@ -37,7 +37,7 @@ export default class Visualizer {
       theta += sliceWidth;
       // amplitude measured from 0 - 1
       var amp = this.dataArray[i] / 256.0;
-      var r = amp * Math.floor(this.HEIGHT / 2);
+      var r = amp * Math.floor(this.HEIGHT * 2 / 6) + Math.floor(this.HEIGHT * 1 / 6);
       var y = this.HEIGHT / 2 + Math.sin(theta) * r;
       var x = this.WIDTH / 2 + Math.cos(theta) * r;
 
