@@ -42,6 +42,13 @@ class MusicPlayer extends React.Component<MusicPlayerProps, {}> {
     );
   };
 
+  keyDown = (e) => {
+    if (e.key === ' ') {
+      let player = document.getElementById("music") as HTMLAudioElement;
+      player.paused ? player.play() : player.pause();
+    }
+  };
+
   componentDidMount(){
     let v = new visualizer({
       canvasElement: document.getElementById('canvas'),
@@ -55,9 +62,9 @@ class MusicPlayer extends React.Component<MusicPlayerProps, {}> {
 
   render() {
     return (
-      <div onClick={this.newSong}>
+      <div tabIndex={1} onClick={this.newSong} onKeyDown={this.keyDown}>
           {this.props.player}
-          <canvas height={1200} width={1600} id="canvas"></canvas>
+          <canvas height={1200} width={1600} id="canvas" ></canvas>
       </div>
     );
   }
