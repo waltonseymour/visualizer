@@ -12,12 +12,12 @@ interface MusicPlayerDispatch {
 }
 
 interface MusicPlayerProps extends MusicPlayerDispatch {
-  player: HTMLAudioElement;
+  currentSong: Song;
 }
 
 const mapStateToProps = (state, ownProps): MusicPlayerProps => {
   return Object.assign({}, ownProps, {
-    player: state.player
+    currentSong: state.currentSong
   })
 }
 
@@ -63,7 +63,7 @@ class MusicPlayer extends React.Component<MusicPlayerProps, {}> {
   render() {
     return (
       <div tabIndex={1} onClick={this.newSong} onKeyDown={this.keyDown}>
-          {this.props.player}
+          <audio id="music" style={{display: 'none'}} autoPlay src={this.props.currentSong.uri}/>
           <canvas height={1200} width={1600} id="canvas" ></canvas>
       </div>
     );
