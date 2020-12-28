@@ -1,0 +1,37 @@
+[package]
+name = "wasm"
+version = "0.1.0"
+authors = ["waltonseymour <walton.l.seymour@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.69"
+js-sys = "0.3.46"
+wasm-bindgen-futures = "0.4.19"
+
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+  'Document',
+  'Element',
+  'Blob',
+  'HtmlElement',
+  'Node',
+  'Window',
+  'HtmlCanvasElement',
+  'FileList',
+  'File',
+  'HtmlInputElement',
+  'AudioContext',
+  'CanvasRenderingContext2d',
+  'AudioBuffer',
+  'AudioBufferSourceNode',
+  'AnalyserNode',
+  'AudioDestinationNode',
+]
