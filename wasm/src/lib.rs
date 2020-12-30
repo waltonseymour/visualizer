@@ -56,7 +56,7 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     source.set_buffer(Some(&buf));
 
     let analyser = audio_ctx.create_analyser()?;
-    analyser.set_fft_size(2048);
+    analyser.set_fft_size(4096);
 
     source.connect_with_audio_node(&analyser)?;
     analyser.connect_with_audio_node(&audio_ctx.destination())?;
@@ -66,7 +66,11 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     Ok(analyser)
 }
 
-const sliceWidth: f64 = 2.0 * f64::consts::PI / 2048.0;
+fn randomColorVal() -> f64 {
+    js_sys::Math::random() * 255.
+}
+
+const sliceWidth: f64 = 2.0 * f64::consts::PI / 4096.0;
 
 struct visualizer {
     height: u32,
@@ -74,20 +78,29 @@ struct visualizer {
 }
 
 impl visualizer {
-    fn draw(&self, ctx: &web_sys::CanvasRenderingContext2d, buf: &[u8; 2048]) {
+    fn draw(&self, ctx: &web_sys::CanvasRenderingContext2d, buf: &[u8; 4096]) {
         ctx.set_fill_style(&"rgb(0, 0, 0)".into());
         ctx.fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
         ctx.set_line_width(10.);
-        ctx.set_stroke_style(&format!("rgb({}, {}, {})", 200, 200, 200).into());
+        ctx.set_stroke_style(
+            &format!(
+                "rgb({}, {}, {})",
+                randomColorVal(),
+                randomColorVal(),
+                randomColorVal()
+            )
+            .into(),
+        );
+        ctx.begin_path();
 
         let mut initialRadius = 0.;
 
         let mut theta = 0.;
-        for i in 0..2048 {
+        for i in 0..4096 {
             theta += sliceWidth;
             let amp = f64::from(buf[i]) / 256.0;
 
-            let r = amp * f64::from(self.height * 2 / 6) + f64::from(self.height * 1 / 6);
+            let r = amp * self.height as f64 * 0.2 + f64::from(self.height * 1 / 6);
 
             let x = f64::from(self.width / 2) + theta.cos() * r;
             let y = f64::from(self.height / 2) + theta.sin() * r;
@@ -113,7 +126,7 @@ impl visualizer {
 pub async fn run() -> Result<(), JsValue> {
     let analyser = load_and_play_file().await?;
 
-    let mut buf: [u8; 2048] = [0; 2048];
+    let mut buf: [u8; 4096] = [0; 4096];
 
     let document = web_sys::window().unwrap().document().unwrap();
 
@@ -129,6 +142,8 @@ pub async fn run() -> Result<(), JsValue> {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
+
+    context.set_filter("blur(4px)");
 
     let vis = visualizer {
         height: canvas.height(),
