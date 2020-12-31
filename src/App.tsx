@@ -24,6 +24,9 @@ const App: React.FC = () => {
     });
   }, [file]);
 
+
+
+  
   return (
     <div className="App">
       <input
@@ -38,9 +41,9 @@ const App: React.FC = () => {
       />
       <canvas
         id="canvas"
-        style={{ height: "600px", width: "800px" }}
-        height={1200}
-        width={1600}
+        style={{ height: "1200px", width: "1600px" }}
+        height={2400}
+        width={3200}
       ></canvas>
     </div>
   );
