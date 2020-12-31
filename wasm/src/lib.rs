@@ -71,16 +71,24 @@ const sliceWidth: f64 = 2.0 * f64::consts::PI / 2048.0;
 struct visualizer {
     height: u32,
     width: u32,
+    canvas: web_sys::HtmlCanvasElement,
     ctx: web_sys::CanvasRenderingContext2d,
+    tmp_canvas: web_sys::HtmlCanvasElement,
+    tmp_ctx: web_sys::CanvasRenderingContext2d,
     buf: [u8; 2048],
 }
 
 impl visualizer {
     fn draw(&self, i: u32) {
         self.ctx.set_fill_style(&"rgb(0, 0, 0)".into());
+
+        self.tmp_ctx
+            .draw_image_with_html_canvas_element(&self.canvas, 0., 0.)
+            .unwrap();
+
         self.ctx
             .fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
-        self.ctx.set_line_width(10.);
+
         self.ctx.set_fill_style(
             &format!(
                 "rgb({}, {}, {})",
@@ -91,7 +99,13 @@ impl visualizer {
             .into(),
         );
 
-        let mut initialRadius = 0.;
+        if i > 100 {
+            self.ctx.set_global_alpha(0.95);
+            self.ctx
+                .draw_image_with_html_canvas_element(&self.tmp_canvas, 0., 0.)
+                .unwrap();
+            self.ctx.set_global_alpha(1.);
+        }
 
         let mut theta = 0.;
         for i in 0..2048 {
@@ -104,7 +118,7 @@ impl visualizer {
             let y = f64::from(self.height / 2) + theta.sin() * r;
 
             self.ctx.begin_path();
-            self.ctx.arc(x, y, 3., 0., 2. * f64::consts::PI).unwrap();
+            self.ctx.arc(x, y, 5., 0., 2. * f64::consts::PI).unwrap();
             self.ctx.fill();
         }
     }
@@ -130,10 +144,29 @@ pub async fn run() -> Result<(), JsValue> {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
 
+    let tmp_canvas = document.create_element("canvas").unwrap();
+    let tmp_canvas: web_sys::HtmlCanvasElement = tmp_canvas
+        .dyn_into::<web_sys::HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
+
+    tmp_canvas.set_width(canvas.width());
+    tmp_canvas.set_height(canvas.height());
+
+    let tmp_context = tmp_canvas
+        .get_context("2d")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<web_sys::CanvasRenderingContext2d>()
+        .unwrap();
+
     let mut vis = visualizer {
         height: canvas.height(),
         width: canvas.width(),
+        canvas: canvas,
         ctx: context,
+        tmp_canvas: tmp_canvas,
+        tmp_ctx: tmp_context,
         buf: [0; 2048],
     };
 
