@@ -56,7 +56,7 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     source.set_buffer(Some(&buf));
 
     let analyser = audio_ctx.create_analyser()?;
-    analyser.set_fft_size(4096);
+    analyser.set_fft_size(2048);
 
     source.connect_with_audio_node(&analyser)?;
     analyser.connect_with_audio_node(&audio_ctx.destination())?;
@@ -66,58 +66,47 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     Ok(analyser)
 }
 
-fn randomColorVal() -> f64 {
-    js_sys::Math::random() * 255.
-}
-
-const sliceWidth: f64 = 2.0 * f64::consts::PI / 4096.0;
+const sliceWidth: f64 = 2.0 * f64::consts::PI / 2048.0;
 
 struct visualizer {
     height: u32,
     width: u32,
+    ctx: web_sys::CanvasRenderingContext2d,
+    buf: [u8; 2048],
 }
 
 impl visualizer {
-    fn draw(&self, ctx: &web_sys::CanvasRenderingContext2d, buf: &[u8; 4096]) {
-        ctx.set_fill_style(&"rgb(0, 0, 0)".into());
-        ctx.fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
-        ctx.set_line_width(10.);
-        ctx.set_stroke_style(
+    fn draw(&self, i: u32) {
+        self.ctx.set_fill_style(&"rgb(0, 0, 0)".into());
+        self.ctx
+            .fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
+        self.ctx.set_line_width(10.);
+        self.ctx.set_fill_style(
             &format!(
                 "rgb({}, {}, {})",
-                randomColorVal(),
-                randomColorVal(),
-                randomColorVal()
+                ((i as f32 / 500.).sin() * 255.).abs(),
+                ((i as f32 / 300.).sin() * 255.).abs(),
+                ((i as f32 / 100.).sin() * 255.).abs(),
             )
             .into(),
         );
-        ctx.begin_path();
 
         let mut initialRadius = 0.;
 
         let mut theta = 0.;
-        for i in 0..4096 {
+        for i in 0..2048 {
             theta += sliceWidth;
-            let amp = f64::from(buf[i]) / 256.0;
+            let amp = f64::from(self.buf[i]) / 256.0;
 
             let r = amp * self.height as f64 * 0.2 + f64::from(self.height * 1 / 6);
 
             let x = f64::from(self.width / 2) + theta.cos() * r;
             let y = f64::from(self.height / 2) + theta.sin() * r;
 
-            if i == 0 {
-                ctx.move_to(x, y);
-                initialRadius = r;
-            } else {
-                ctx.line_to(x, y);
-            }
+            self.ctx.begin_path();
+            self.ctx.arc(x, y, 3., 0., 2. * f64::consts::PI).unwrap();
+            self.ctx.fill();
         }
-
-        ctx.line_to(
-            f64::from(self.width / 2) + initialRadius,
-            f64::from(self.height / 2),
-        );
-        ctx.stroke();
     }
 }
 
@@ -125,8 +114,6 @@ impl visualizer {
 #[wasm_bindgen]
 pub async fn run() -> Result<(), JsValue> {
     let analyser = load_and_play_file().await?;
-
-    let mut buf: [u8; 4096] = [0; 4096];
 
     let document = web_sys::window().unwrap().document().unwrap();
 
@@ -143,19 +130,21 @@ pub async fn run() -> Result<(), JsValue> {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
 
-    context.set_filter("blur(4px)");
-
-    let vis = visualizer {
+    let mut vis = visualizer {
         height: canvas.height(),
         width: canvas.width(),
+        ctx: context,
+        buf: [0; 2048],
     };
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
+    let mut i = 0;
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        analyser.get_byte_time_domain_data(&mut buf);
-        vis.draw(&context, &buf);
+        i += 1;
+        analyser.get_byte_time_domain_data(&mut vis.buf);
+        vis.draw(i);
 
         // Schedule ourself for another requestAnimationFrame callback.
         request_animation_frame(f.borrow().as_ref().unwrap());
