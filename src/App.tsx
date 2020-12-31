@@ -22,14 +22,14 @@ const App: React.FC = () => {
       const t1 = performance.now();
       console.log(`playing song took ${t1 - t0} milliseconds.`);
     });
+
+    document.getElementById("canvas")?.requestFullscreen();
   }, [file]);
 
-
-
-  
   return (
     <div className="App">
       <input
+        style={{ display: file ? "none" : "unset" }}
         accept=".mp3"
         onChange={(e) => {
           // @ts-ignore
@@ -41,9 +41,9 @@ const App: React.FC = () => {
       />
       <canvas
         id="canvas"
-        style={{ height: "1200px", width: "1600px" }}
-        height={2400}
-        width={3200}
+        style={{ height: "100%", width: "100%" }}
+        height={window.innerHeight * window.devicePixelRatio}
+        width={window.innerWidth * window.devicePixelRatio}
       ></canvas>
     </div>
   );
