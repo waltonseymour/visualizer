@@ -42,8 +42,8 @@ const App: React.FC = () => {
       <canvas
         id="canvas"
         style={{ height: "100%", width: "100%" }}
-        height={window.innerHeight * window.devicePixelRatio}
-        width={window.innerWidth * window.devicePixelRatio}
+        height={window.screen.height * window.devicePixelRatio}
+        width={window.screen.width * window.devicePixelRatio}
       ></canvas>
     </div>
   );

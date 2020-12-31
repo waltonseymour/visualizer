@@ -78,23 +78,36 @@ struct visualizer {
     buf: [u8; 2048],
 }
 
+// speed which you move into the center
+// lower value is faster
+const STEP_FACTOR: f64 = 150.;
+
 impl visualizer {
     fn draw(&self, i: u32) {
-        self.ctx.set_fill_style(&"rgb(0, 0, 0)".into());
-
         self.tmp_ctx
-            .draw_image_with_html_canvas_element(&self.canvas, 0., 0.)
+            .draw_image_with_html_canvas_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
+                &self.canvas,
+                self.width as f64 / STEP_FACTOR,
+                self.height as f64 / STEP_FACTOR,
+                self.width as f64 * (STEP_FACTOR - 2.) / STEP_FACTOR,
+                self.height as f64 * (STEP_FACTOR - 2.) / STEP_FACTOR,
+                0.,
+                0.,
+                self.width as f64,
+                self.height as f64,
+            )
             .unwrap();
 
+        self.ctx.set_fill_style(&"rgb(0, 0, 0)".into());
         self.ctx
             .fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
 
         self.ctx.set_fill_style(
             &format!(
                 "rgb({}, {}, {})",
-                ((i as f32 / 500.).sin() * 255.).abs(),
-                ((i as f32 / 300.).sin() * 255.).abs(),
-                ((i as f32 / 100.).sin() * 255.).abs(),
+                (i as f32 / 500.).sin() * 127.5 + 127.5,
+                (i as f32 / 300.).sin() * 127.5 + 127.5,
+                (i as f32 / 100.).sin() * 127.5 + 127.5,
             )
             .into(),
         );
@@ -112,7 +125,7 @@ impl visualizer {
             theta += sliceWidth;
             let amp = f64::from(self.buf[i]) / 256.0;
 
-            let r = amp * self.height as f64 * 0.2 + f64::from(self.height * 1 / 6);
+            let r = amp * self.height as f64 * 0.2 + self.height as f64 * 0.09;
 
             let x = f64::from(self.width / 2) + theta.cos() * r;
             let y = f64::from(self.height / 2) + theta.sin() * r;
