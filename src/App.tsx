@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "@blueprintjs/core/lib/css/blueprint.css";
-import { FileInput, H2, Slider } from "@blueprintjs/core";
-import fscreen from "fscreen";
+import { FileInput, FormGroup, H2, Slider } from "@blueprintjs/core";
 
 const runWasm = async () => {
   // Instantiate our wasm module
@@ -35,7 +34,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // @ts-ignore
-    window.colorStepFactor = colorStepFactor;
+    window.colorStepFactor = 199 - colorStepFactor;
   }, [colorStepFactor]);
 
   useEffect(() => {
@@ -69,13 +68,12 @@ const App: React.FC = () => {
             // @ts-ignore
             const file = e.target.files[0];
             setFile(file);
-            // @ts-ignore
-            fscreen.requestFullscreen(document.getElementById("canvas"));
           }}
         />
       </div>
 
       <div
+        id="full-screen"
         style={{
           display: !file ? "none" : "unset",
           position: "absolute",
@@ -83,40 +81,64 @@ const App: React.FC = () => {
           top: "50px",
         }}
       >
-        <Slider
-          min={50}
-          max={400}
-          stepSize={10}
-          labelStepSize={100}
-          value={stepFactor}
-          onChange={setStepFactor}
-        />
+        <FormGroup
+            helperText="Controls speed of radial fade"
+            label="Radial Step Factor"
+            labelFor="text-input"
+        >
+          <Slider
+            min={50}
+            max={400}
+            stepSize={10}
+            labelStepSize={100}
+            value={stepFactor}
+            onChange={setStepFactor}
+          />
+        </FormGroup>
 
-        <Slider
-          min={1}
-          max={200}
-          stepSize={10}
-          labelStepSize={100}
-          value={colorStepFactor}
-          onChange={setColorStepFactor}
-        />
+        <FormGroup
+            helperText="Controls speed of color change"
+            label="Color Step Factor"
+            labelFor="text-input"
+        >
+          <Slider
+            min={1}
+            max={200}
+            stepSize={10}
+            labelStepSize={100}
+            value={colorStepFactor}
+            onChange={setColorStepFactor}
+          />
+        </FormGroup>
 
-        <Slider
-          min={0}
-          max={1}
-          stepSize={0.01}
-          labelStepSize={0.25}
-          value={opacity}
-          onChange={setOpacity}
-        />
-        <Slider
-          min={1}
-          max={20}
-          stepSize={1}
-          labelStepSize={10}
-          value={radius}
-          onChange={setRadius}
-        />
+        <FormGroup
+            helperText="Controls opacity of old frames"
+            label="Opacity Decay"
+            labelFor="text-input"
+        >
+          <Slider
+            min={.5}
+            max={1}
+            stepSize={0.01}
+            labelStepSize={0.25}
+            value={opacity}
+            onChange={setOpacity}
+          />
+        </FormGroup>
+        <FormGroup
+            helperText="Controls size of waveform"
+            label="Waveform Radius"
+            labelFor="text-input"
+        >
+          <Slider
+            min={0}
+            max={20}
+            stepSize={1}
+            labelStepSize={10}
+            value={radius}
+            onChange={setRadius}
+          />
+        </FormGroup>
       </div>
 
       <canvas
@@ -126,8 +148,8 @@ const App: React.FC = () => {
           height: "100%",
           width: "100%",
         }}
-        height={window.screen.height * window.devicePixelRatio}
-        width={window.screen.width * window.devicePixelRatio}
+        height={window.innerHeight * window.devicePixelRatio}
+        width={window.innerWidth * window.devicePixelRatio}
       ></canvas>
     </div>
   );

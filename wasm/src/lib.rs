@@ -68,7 +68,7 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     Ok(analyser)
 }
 
-struct visualizer {
+struct Visualizer {
     height: u32,
     width: u32,
     canvas: web_sys::HtmlCanvasElement,
@@ -80,7 +80,7 @@ struct visualizer {
 
 const SLICE_WIDTH: f64 = 2.0 * f64::consts::PI / 2048.0;
 
-impl visualizer {
+impl Visualizer {
     fn draw(&self, i: u32) {
         // fetch drawing variables from window
         let step_factor = window().get("stepFactor").unwrap().as_f64().unwrap();
@@ -183,7 +183,7 @@ pub async fn run() -> Result<(), JsValue> {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
 
-    let mut vis = visualizer {
+    let mut vis = Visualizer {
         height: canvas.height(),
         width: canvas.width(),
         canvas: canvas,
