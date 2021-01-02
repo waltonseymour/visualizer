@@ -1,5 +1,7 @@
+extern crate console_error_panic_hook;
 use std::cell::RefCell;
 use std::f64;
+use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -139,6 +141,8 @@ impl visualizer {
 
 #[wasm_bindgen]
 pub async fn run() -> Result<(), JsValue> {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+
     let analyser = load_and_play_file().await?;
 
     let document = web_sys::window().unwrap().document().unwrap();
