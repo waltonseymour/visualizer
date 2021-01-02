@@ -66,8 +66,6 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     Ok(analyser)
 }
 
-const sliceWidth: f64 = 2.0 * f64::consts::PI / 2048.0;
-
 struct visualizer {
     height: u32,
     width: u32,
@@ -81,6 +79,8 @@ struct visualizer {
 // speed which you move into the center
 // lower value is faster
 const STEP_FACTOR: f64 = 150.;
+
+const SLICE_WIDTH: f64 = 2.0 * f64::consts::PI / 2048.0;
 
 impl visualizer {
     fn draw(&self, i: u32) {
@@ -122,7 +122,7 @@ impl visualizer {
 
         let mut theta = 0.;
         for i in 0..2048 {
-            theta += sliceWidth;
+            theta += SLICE_WIDTH;
             let amp = f64::from(self.buf[i]) / 256.0;
 
             let r = amp * self.height as f64 * 0.2 + self.height as f64 * 0.09;
@@ -137,7 +137,6 @@ impl visualizer {
     }
 }
 
-// This function is automatically invoked after the wasm module is instantiated.
 #[wasm_bindgen]
 pub async fn run() -> Result<(), JsValue> {
     let analyser = load_and_play_file().await?;
