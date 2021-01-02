@@ -35,7 +35,8 @@ const App: React.FC = () => {
           // @ts-ignore
           const file = e.target.files[0];
           setFile(file);
-          fscreen.requestFullscreen(document.getElementById("canvas") as HTMLElement);
+          // @ts-ignore
+          fscreen.requestFullscreen(document.getElementById("canvas"));
         }}
         id="file-input"
         type="file"
