@@ -23,7 +23,7 @@ jobs:
       - name: Deploy Netlify
         uses: netlify/actions/cli@master
         with:
-          args: deploy
+          args: deploy --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: a67a0242-be41-4eee-9087-649aede4ef71
