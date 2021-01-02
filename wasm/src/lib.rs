@@ -78,21 +78,24 @@ struct visualizer {
     buf: [u8; 2048],
 }
 
-// speed which you move into the center
-// lower value is faster
-const STEP_FACTOR: f64 = 150.;
-
 const SLICE_WIDTH: f64 = 2.0 * f64::consts::PI / 2048.0;
 
 impl visualizer {
     fn draw(&self, i: u32) {
+        // fetch drawing variables from window
+        let step_factor = window().get("stepFactor").unwrap().as_f64().unwrap();
+        let color_step_factor = window().get("colorStepFactor").unwrap().as_f64().unwrap();
+        let opacity = window().get("opacity").unwrap().as_f64().unwrap();
+        let radius = window().get("radius").unwrap().as_f64().unwrap();
+
+        // save last frame to offscreen canvas with step_factor trimmed off
         self.tmp_ctx
             .draw_image_with_html_canvas_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
                 &self.canvas,
-                self.width as f64 / STEP_FACTOR,
-                self.height as f64 / STEP_FACTOR,
-                self.width as f64 * (STEP_FACTOR - 2.) / STEP_FACTOR,
-                self.height as f64 * (STEP_FACTOR - 2.) / STEP_FACTOR,
+                self.width as f64 / step_factor,
+                self.height as f64 / step_factor,
+                self.width as f64 * (step_factor - 2.) / step_factor,
+                self.height as f64 * (step_factor - 2.) / step_factor,
                 0.,
                 0.,
                 self.width as f64,
@@ -100,28 +103,30 @@ impl visualizer {
             )
             .unwrap();
 
+        // clear canvas
         self.ctx.set_fill_style(&"rgb(0, 0, 0)".into());
         self.ctx
             .fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
 
+        // set color
         self.ctx.set_fill_style(
             &format!(
                 "rgb({}, {}, {})",
-                (i as f32 / 500.).sin() * 127.5 + 127.5,
-                (i as f32 / 300.).sin() * 127.5 + 127.5,
-                (i as f32 / 100.).sin() * 127.5 + 127.5,
+                (i as f64 / color_step_factor / 5.).sin() * 127.5 + 127.5,
+                (i as f64 / color_step_factor / 3.).sin() * 127.5 + 127.5,
+                (i as f64 / color_step_factor).sin() * 127.5 + 127.5,
             )
             .into(),
         );
 
-        if i > 100 {
-            self.ctx.set_global_alpha(0.95);
-            self.ctx
-                .draw_image_with_html_canvas_element(&self.tmp_canvas, 0., 0.)
-                .unwrap();
-            self.ctx.set_global_alpha(1.);
-        }
+        // draw old frame with opacity
+        self.ctx.set_global_alpha(opacity);
+        self.ctx
+            .draw_image_with_html_canvas_element(&self.tmp_canvas, 0., 0.)
+            .unwrap();
+        self.ctx.set_global_alpha(1.);
 
+        // render new frame
         let mut theta = 0.;
         for i in 0..2048 {
             theta += SLICE_WIDTH;
@@ -133,7 +138,9 @@ impl visualizer {
             let y = f64::from(self.height / 2) + theta.sin() * r;
 
             self.ctx.begin_path();
-            self.ctx.arc(x, y, 5., 0., 2. * f64::consts::PI).unwrap();
+            self.ctx
+                .arc(x, y, radius, 0., 2. * f64::consts::PI)
+                .unwrap();
             self.ctx.fill();
         }
     }
