@@ -21,8 +21,9 @@ jobs:
       - run: yarn build
 
       - name: Deploy Netlify
-        uses: danakim/gh-action-deploy-netlify@master
+        uses: netlify/actions/cli@master
         with:
-          AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          SITE_ID: a67a0242-be41-4eee-9087-649aede4ef71
-          DEPLOY_PROD: true
+          args: deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: a67a0242-be41-4eee-9087-649aede4ef71
