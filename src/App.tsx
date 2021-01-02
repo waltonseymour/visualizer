@@ -28,11 +28,11 @@ const App: React.FC = () => {
   }, [file]);
 
   return (
-    <div style={{ display: "grid", justifyContent: "center", height: "100vh", }}>
+    <div className="bp3-dark" style={{ background: "#0f0e17", display: "grid", justifyContent: "center", height: "100vh", }}>
       <div style={{ marginTop:"35vh", display: file ? "none" : "unset", }}>
         <H2>Select an audio file</H2>
         <FileInput
-          style={{  width: "200px"}}
+          style={{ width: "250px" }}
           inputProps={{ accept: "audio/*", id: "file-input" }}  
           onChange={(e) => {
             // @ts-ignore
