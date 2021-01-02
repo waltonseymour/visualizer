@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import fscreen from 'fscreen';
 
 const runWasm = async () => {
   // Instantiate our wasm module
@@ -22,8 +23,7 @@ const App: React.FC = () => {
       const t1 = performance.now();
       console.log(`playing song took ${t1 - t0} milliseconds.`);
     });
-
-    document.getElementById("canvas")?.requestFullscreen();
+    
   }, [file]);
 
   return (
@@ -35,6 +35,7 @@ const App: React.FC = () => {
           // @ts-ignore
           const file = e.target.files[0];
           setFile(file);
+          fscreen.requestFullscreen(document.getElementById("canvas") as HTMLElement);
         }}
         id="file-input"
         type="file"
